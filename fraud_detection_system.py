@@ -165,11 +165,11 @@ class HybridFraudDetectionSystem:
         logger.info(f"  Test samples: {len(self.X_test)} ({np.sum(self.y_test)} fraud)")
         
         return df_processed
-    
+
     def build_model(self, input_dim=None):
         """
         Build the hybrid autoencoder model
-        
+
         Args:
             input_dim: Input dimension (auto-detected if None)
         """
@@ -178,21 +178,26 @@ class HybridFraudDetectionSystem:
                 input_dim = self.X_train_normal.shape[1]
             else:
                 raise ValueError("Input dimension not specified and no training data available")
-        
+
         logger.info(f"Building hybrid autoencoder model (input_dim={input_dim})")
-        
+
         # Create model
         self.model = create_hybrid_autoencoder(
-            input_dim, 
+            input_dim,
             self.config['model']['autoencoder']
         )
-        
-        # Create training loop
+
+        # Get training configuration
+        training_config = self.config['model']['training']
+
+        # Create training loop with properly extracted parameters
         self.training_loop = CustomTrainingLoop(
-            self.model,
-            **self.config['model']['training']
+            model=self.model,
+            learning_rate=training_config.get('learning_rate', 0.001),
+            reconstruction_weight=training_config.get('reconstruction_weight', 1.0),
+            lmp_weight=training_config.get('lmp_weight', 0.1)
         )
-        
+
         logger.info("Model built successfully")
         
     def train(self, epochs=None, batch_size=None, verbose=True):
