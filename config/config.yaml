@@ -1,0 +1,72 @@
+# config.yaml - Main Configuration File
+model:
+  autoencoder:
+    encoding_dims: [14, 7]
+    dropout_rate: 0.1
+    activation: 'tanh'
+    output_activation: 'linear'
+
+  loss_prediction_module:
+    hidden_dims: [64, 32, 16]
+    dropout_rate: 0.2
+    activation: 'relu'
+    output_activation: 'sigmoid'
+
+  training:
+    learning_rate: 0.001
+    reconstruction_weight: 1.0
+    lmp_weight: 0.1
+    optimizer: 'adam'
+
+training:
+  epochs: 100
+  batch_size: 32
+  validation_split: 0.2
+  early_stopping:
+    patience: 10
+    monitor: 'val_loss'
+    restore_best_weights: true
+
+active_learning:
+  strategy: 'uncertainty'  # Options: uncertainty, diversity, qbc, adaptive, cost_sensitive
+  samples_per_iteration: 50
+  max_iterations: 5
+  uncertainty_method: 'multiply'  # Options: multiply, add, weighted
+
+data:
+  test_size: 0.2
+  random_state: 42
+  scale_features: true
+  threshold_percentile: 95
+  handle_missing: true
+  remove_outliers: false
+  balance_data: false
+
+preprocessing:
+  scaler_type: 'standard'  # Options: standard, minmax, robust
+  imputer_type: 'median'   # Options: mean, median, mode, knn
+  outlier_method: 'iqr'    # Options: iqr, zscore
+  balance_method: 'smote'  # Options: smote, adasyn, undersample
+
+evaluation:
+  cross_validation: false
+  cv_folds: 5
+  business_metrics: true
+  cost_matrix:
+    true_positive: -100   # Benefit of catching fraud
+    false_positive: 10    # Cost of false alarm
+    false_negative: 100   # Cost of missing fraud
+    true_negative: 0      # No cost for correct normal classification
+
+output:
+  save_model: true
+  save_results: true
+  save_plots: true
+  results_dir: 'results'
+  model_dir: 'models'
+  plots_dir: 'plots'
+
+logging:
+  level: 'INFO'
+  format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+  file: 'logs/fraud_detection.log'
